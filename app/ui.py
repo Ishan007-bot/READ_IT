@@ -29,13 +29,12 @@ st.set_page_config(
 # ─────────────────────────────────────────────────────────────────────────────
 CUSTOM_CSS = """
 <style>
-/* Hide hamburger menu and footer, but KEEP header visible so the
-   sidebar collapse/expand toggle stays reachable. Make the header
-   transparent so it blends with our gradient backdrop. */
-#MainMenu, footer {visibility: hidden;}
+/* Hide only the "Made with Streamlit" footer. Keep the header and
+   the three-dot menu (Rerun, Settings, Record screencast, Print, About)
+   visible — the user expects native Streamlit controls to work. */
+footer {visibility: hidden;}
 header[data-testid="stHeader"] {
     background: transparent !important;
-    height: 0px;
 }
 /* Sidebar collapse/expand control — make it visible above the header */
 button[data-testid="stSidebarCollapseButton"],
