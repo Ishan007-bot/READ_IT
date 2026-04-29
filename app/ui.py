@@ -6,12 +6,22 @@ from __future__ import annotations
 
 import base64
 import re
+import sys
 import tempfile
 from pathlib import Path
 
-import streamlit as st
+# Ensure the project root is on sys.path so `from app.X` resolves whether
+# the script is launched via `python -m streamlit run app/ui.py` (project
+# root on path) or directly as `streamlit run app/ui.py` from a deploy
+# host (Streamlit Cloud, HF Spaces, etc., where only the script dir is on
+# the path by default).
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
-from app.service import get_service
+import streamlit as st  # noqa: E402
+
+from app.service import get_service  # noqa: E402
 
 
 # ─────────────────────────────────────────────────────────────────────────────
