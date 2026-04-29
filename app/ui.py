@@ -628,8 +628,7 @@ def _render_sidebar() -> None:
         st.markdown(
             """
             <div class="readit-footer">
-              Built with Streamlit · Groq Llama 3.3 · FAISS<br/>
-              <span style="opacity:.7;">v1.0 — internship project</span>
+              Built with Streamlit · Groq Llama 3.3 · FAISS
             </div>
             """,
             unsafe_allow_html=True,
