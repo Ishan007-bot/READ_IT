@@ -10,8 +10,6 @@ A polished chat agent that answers questions about a single PDF and **only**
 that PDF. Every factual claim is grounded with a page citation; out-of-scope
 questions are explicitly refused.
 
-Built for the internship Task 3 brief.
-
 ---
 
 ## Highlights
