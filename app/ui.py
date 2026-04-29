@@ -29,8 +29,22 @@ st.set_page_config(
 # ─────────────────────────────────────────────────────────────────────────────
 CUSTOM_CSS = """
 <style>
-/* Hide default Streamlit chrome */
-#MainMenu, footer, header {visibility: hidden;}
+/* Hide hamburger menu and footer, but KEEP header visible so the
+   sidebar collapse/expand toggle stays reachable. Make the header
+   transparent so it blends with our gradient backdrop. */
+#MainMenu, footer {visibility: hidden;}
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    height: 0px;
+}
+/* Sidebar collapse/expand control — make it visible above the header */
+button[data-testid="stSidebarCollapseButton"],
+button[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+}
 
 /* App-wide subtle gradient backdrop */
 .stApp {
