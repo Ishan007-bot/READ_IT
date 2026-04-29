@@ -2,7 +2,7 @@
 
 ## 🔗 Quick Links
 
-- 🚀 **Deployed Application:** [Open the live app](https://your-deployment-url.streamlit.app)
+- 🚀 **Deployed Application:** [Open the live app](https://readit-8n9hjsoiczfjqjiuwbcdtw.streamlit.app/)
 - 🎬 **Live Demo Video:** [Watch the walkthrough](https://your-demo-video-url)
 - 📊 **Presentation PPT:** [View the PPT Slides](https://your-ppt-drive-link)
 
