@@ -425,7 +425,25 @@ section[data-testid="stSidebar"] .doc-stat .value { color: #f1f5f9 !important; }
     background: rgba(99,102,241,0.10) !important;
     border-color: rgba(165,180,252,0.5) !important;
 }
-[data-testid="stFileUploader"] * { color: #e2e8f0 !important; }
+/* Dropzone instructions ("Drop a PDF here") — light text on dark bg */
+[data-testid="stFileUploaderDropzone"],
+[data-testid="stFileUploaderDropzone"] * { color: #e2e8f0 !important; }
+[data-testid="stFileUploaderDropzoneInstructions"] *,
+[data-testid="stFileUploaderInstructions"] * { color: #cbd5e1 !important; }
+
+/* Uploaded file pill itself has a white background — keep its text DARK
+   so the file name is readable. */
+[data-testid="stFileUploaderFile"],
+[data-testid="stFileUploaderFile"] *,
+[data-testid="stFileUploader"] li,
+[data-testid="stFileUploader"] li * {
+    color: #0f172a !important;
+}
+/* The file size sub-label inside the pill (smaller, muted) */
+[data-testid="stFileUploaderFile"] small,
+[data-testid="stFileUploader"] li small {
+    color: #475569 !important;
+}
 
 .cite-pill {
     background: linear-gradient(135deg, rgba(165,180,252,0.18) 0%, rgba(244,114,182,0.18) 100%) !important;
