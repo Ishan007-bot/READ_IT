@@ -1,6 +1,10 @@
 # 📖 ReadIt — PDF-Constrained Conversational Agent
 
-> **🚀 [Deployed Link](https://your-deployment-url.streamlit.app)**  ·  **🎬 [Live Demo Video](https://your-demo-video-url)**  ·  **📊 [Presentation PPT](https://your-ppt-drive-link)**
+## 🔗 Quick Links
+
+- 🚀 **Deployed Application:** [Open the live app](https://your-deployment-url.streamlit.app)
+- 🎬 **Live Demo Video:** [Watch the walkthrough](https://your-demo-video-url)
+- 📊 **Presentation PPT:** [View the PPT Slides](https://your-ppt-drive-link)
 
 A polished chat agent that answers questions about a single PDF and **only**
 that PDF. Every factual claim is grounded with a page citation; out-of-scope
