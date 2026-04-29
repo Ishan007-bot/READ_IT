@@ -4,6 +4,7 @@ Run: ./venv/Scripts/python.exe -m streamlit run app/ui.py
 """
 from __future__ import annotations
 
+import base64
 import re
 import tempfile
 from pathlib import Path
@@ -14,11 +15,29 @@ from app.service import get_service
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Logo handling — drop a PNG at app/static/readit-logo.png and it picks up
+# automatically. Falls back to the 📖 emoji if the file isn't present.
+# ─────────────────────────────────────────────────────────────────────────────
+LOGO_PATH = Path(__file__).parent / "static" / "readit-logo.png"
+
+
+def _logo_data_uri() -> str | None:
+    if not LOGO_PATH.exists():
+        return None
+    data = LOGO_PATH.read_bytes()
+    return f"data:image/png;base64,{base64.b64encode(data).decode('ascii')}"
+
+
+LOGO_URI = _logo_data_uri()
+PAGE_ICON = str(LOGO_PATH) if LOGO_PATH.exists() else "📖"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Page configuration
 # ─────────────────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="ReadIt — Chat with any PDF",
-    page_icon="📖",
+    page_icon=PAGE_ICON,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -112,13 +131,31 @@ section[data-testid="stSidebar"] {
     margin-bottom: 14px;
 }
 .readit-logo .logo-icon {
-    width: 38px; height: 38px;
+    width: 42px; height: 42px;
     background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     color: white; font-size: 20px; font-weight: 700;
     box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+    overflow: hidden;
 }
+.readit-logo .logo-icon img {
+    width: 100%; height: 100%; object-fit: contain;
+    background: white;
+    padding: 4px;
+}
+.hero-logo {
+    width: 56px; height: 56px;
+    background: white;
+    border-radius: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-right: 14px;
+    vertical-align: middle;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    padding: 6px;
+}
+.hero-logo img { width: 100%; height: 100%; object-fit: contain; }
+.hero-title-row { display: flex; align-items: center; gap: 4px; }
 .readit-logo .logo-text {
     font-weight: 800;
     font-size: 1.4rem;
@@ -326,6 +363,101 @@ section[data-testid="stSidebar"] {
 """
 
 
+DARK_CSS = """
+<style>
+/* Dark theme — overrides activated when the user toggles dark mode */
+.stApp {
+    background:
+        radial-gradient(circle at 0% 0%, rgba(99,102,241,0.18) 0%, transparent 35%),
+        radial-gradient(circle at 100% 0%, rgba(236,72,153,0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(14,165,233,0.10) 0%, transparent 40%),
+        #0b1224 !important;
+    color: #e2e8f0;
+}
+.stApp, .stApp p, .stApp li, .stApp span, .stApp label,
+.stApp h1, .stApp h2, .stApp h3, .stApp h4 { color: #e2e8f0; }
+.stApp .stMarkdown, .stApp .stCaption { color: #cbd5e1 !important; }
+
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%) !important;
+    border-right: 1px solid rgba(99,102,241,0.25) !important;
+}
+section[data-testid="stSidebar"] * { color: #e2e8f0 !important; }
+section[data-testid="stSidebar"] .doc-stat .label { color: #94a3b8 !important; }
+section[data-testid="stSidebar"] .doc-stat .value { color: #f1f5f9 !important; }
+
+.feature-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+.feature-card h4 { color: #f1f5f9 !important; }
+.feature-card p { color: #cbd5e1 !important; }
+
+.doc-stat {
+    background: rgba(30,41,59,0.7) !important;
+    border-color: rgba(99,102,241,0.35) !important;
+}
+.doc-name {
+    background: rgba(30,41,59,0.7) !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+[data-testid="stChatMessage"] {
+    background: rgba(30,41,59,0.85) !important;
+    border-color: #334155 !important;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.35) !important;
+}
+[data-testid="stChatMessage"] * { color: #e2e8f0 !important; }
+[data-testid="stChatMessage"] .stMarkdown code { color: #c7d2fe !important; }
+
+[data-testid="stFileUploader"] section {
+    background: rgba(99,102,241,0.10) !important;
+    border-color: rgba(165,180,252,0.5) !important;
+}
+[data-testid="stFileUploader"] * { color: #e2e8f0 !important; }
+
+.cite-pill {
+    background: linear-gradient(135deg, rgba(165,180,252,0.18) 0%, rgba(244,114,182,0.18) 100%) !important;
+    color: #c7d2fe !important;
+    border-color: rgba(165,180,252,0.4) !important;
+}
+.refusal-tag {
+    background: rgba(245,158,11,0.18) !important;
+    color: #fcd34d !important;
+    border-color: rgba(245,158,11,0.45) !important;
+}
+.sidebar-note {
+    background: rgba(99,102,241,0.12) !important;
+    color: #cbd5e1 !important;
+}
+.readit-footer {
+    color: #64748b !important;
+    border-top-color: #334155 !important;
+}
+
+.stButton button[kind="secondary"] {
+    background: rgba(99,102,241,0.14) !important;
+    border-color: rgba(165,180,252,0.4) !important;
+    color: #c7d2fe !important;
+}
+.stButton button[kind="secondary"]:hover {
+    background: rgba(99,102,241,0.24) !important;
+}
+
+[data-testid="stExpander"] {
+    background: rgba(30,41,59,0.7) !important;
+    border: 1px solid #334155 !important;
+    border-radius: 10px !important;
+}
+[data-testid="stExpander"] * { color: #cbd5e1 !important; }
+
+.hero-logo { background: rgba(255,255,255,0.95) !important; }
+.readit-logo .logo-icon img { background: rgba(255,255,255,0.95) !important; }
+</style>
+"""
+
+
 SUGGESTED_QUESTIONS = [
     "Summarize this document in 5 bullet points.",
     "What are the most important numbers or statistics?",
@@ -350,6 +482,16 @@ def _init_state() -> None:
     st.session_state.setdefault("doc_info", None)
     st.session_state.setdefault("messages", [])
     st.session_state.setdefault("queued_prompt", None)
+    st.session_state.setdefault("dark_mode", False)
+
+
+def _logo_html_for(size: str = "icon") -> str:
+    """Return HTML markup for the logo, falling back to an emoji glyph."""
+    if LOGO_URI:
+        return f'<img src="{LOGO_URI}" alt="ReadIt logo" />'
+    if size == "icon":
+        return "R"
+    return "📖"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -358,9 +500,9 @@ def _init_state() -> None:
 def _render_sidebar() -> None:
     with st.sidebar:
         st.markdown(
-            """
+            f"""
             <div class="readit-logo">
-                <div class="logo-icon">R</div>
+                <div class="logo-icon">{_logo_html_for("icon")}</div>
                 <div>
                     <div class="logo-text">ReadIt</div>
                     <div class="logo-tag">Chat with any PDF · grounded answers</div>
@@ -369,6 +511,28 @@ def _render_sidebar() -> None:
             """,
             unsafe_allow_html=True,
         )
+
+        # Dark-mode toggle
+        toggle_col1, toggle_col2 = st.columns([1, 1])
+        with toggle_col1:
+            st.markdown(
+                f"<div style='padding-top:6px;font-size:0.85rem;font-weight:600;'>"
+                f"{'🌙' if st.session_state.dark_mode else '☀️'} "
+                f"{'Dark mode' if st.session_state.dark_mode else 'Light mode'}"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+        with toggle_col2:
+            new_dark = st.toggle(
+                "Dark mode",
+                value=st.session_state.dark_mode,
+                key="dark_toggle",
+                label_visibility="collapsed",
+            )
+            if new_dark != st.session_state.dark_mode:
+                st.session_state.dark_mode = new_dark
+                st.rerun()
+        st.markdown("<div style='margin-bottom:8px;'></div>", unsafe_allow_html=True)
 
         st.markdown("#### 📤 Upload your document")
         uploaded = st.file_uploader(
@@ -612,6 +776,8 @@ def _handle_prompt(prompt: str) -> None:
 def main() -> None:
     _init_state()
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+    if st.session_state.dark_mode:
+        st.markdown(DARK_CSS, unsafe_allow_html=True)
 
     info = st.session_state.get("doc_info")
     badge = (
@@ -620,12 +786,20 @@ def main() -> None:
         if info
         else "<span class='badge'>⚡ Powered by Llama 3.3 70B + FAISS</span>"
     )
+    hero_logo = (
+        f"<span class='hero-logo'><img src='{LOGO_URI}' alt='ReadIt' /></span>"
+        if LOGO_URI
+        else "📖 "
+    )
     st.markdown(
         f"""
         <div class="readit-hero">
             <div style="margin-bottom:10px;">{badge}</div>
-            <h1>📖 ReadIt</h1>
-            <p>Upload any PDF and chat with it. Strictly grounded answers, page-level citations, multilingual, and a hard refusal when something isn't in your document.</p>
+            <div class="hero-title-row">
+                {hero_logo}
+                <h1 style="margin:0;">ReadIt</h1>
+            </div>
+            <p style="margin-top:8px;">Upload any PDF and chat with it. Strictly grounded answers, page-level citations, multilingual, and a hard refusal when something isn't in your document.</p>
         </div>
         """,
         unsafe_allow_html=True,
