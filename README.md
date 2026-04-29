@@ -1,4 +1,4 @@
-# 📖 ReadIt — PDF-Constrained Conversational Agent
+# 📖 ReadIt — Grounded PDF Chat with Page-Level Citations
 
 ## 🔗 Quick Links
 
