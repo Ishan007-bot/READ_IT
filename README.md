@@ -415,6 +415,3 @@ ship, roughly in priority order:
 
 ---
 
-## 📜 License
-
-MIT, for evaluation purposes.
