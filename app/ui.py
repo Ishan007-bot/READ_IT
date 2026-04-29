@@ -464,6 +464,55 @@ section[data-testid="stSidebar"] .doc-stat .value { color: #f1f5f9 !important; }
 
 .hero-logo { background: rgba(255,255,255,0.95) !important; }
 .readit-logo .logo-icon img { background: rgba(255,255,255,0.95) !important; }
+
+/* ── Chat input area (the bottom bar where the user types) ─────────── */
+[data-testid="stBottom"],
+[data-testid="stBottomBlockContainer"],
+[data-testid="stBottom"] > div {
+    background: transparent !important;
+}
+[data-testid="stChatInput"] {
+    background: rgba(30,41,59,0.92) !important;
+    border: 1px solid #334155 !important;
+    border-radius: 14px !important;
+}
+[data-testid="stChatInput"] textarea,
+[data-testid="stChatInput"] input {
+    background: transparent !important;
+    color: #f1f5f9 !important;
+    caret-color: #c7d2fe !important;
+}
+[data-testid="stChatInput"] textarea::placeholder,
+[data-testid="stChatInput"] input::placeholder {
+    color: #64748b !important;
+    opacity: 1 !important;
+}
+[data-testid="stChatInput"] button {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+    color: white !important;
+    border: none !important;
+}
+[data-testid="stChatInput"] button:hover {
+    filter: brightness(1.1);
+}
+[data-testid="stChatInput"] button svg { color: white !important; fill: white !important; }
+[data-testid="stChatInput"] button:disabled {
+    background: rgba(99,102,241,0.35) !important;
+    color: rgba(255,255,255,0.6) !important;
+}
+
+/* ── Toast notifications & alerts in dark mode ─────────────────────── */
+[data-testid="stNotification"],
+[data-testid="stAlert"] {
+    background: rgba(30,41,59,0.92) !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+[data-testid="stNotification"] *,
+[data-testid="stAlert"] * { color: #e2e8f0 !important; }
+
+/* ── Toggle switch label colour ────────────────────────────────────── */
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] { color: #e2e8f0 !important; }
 </style>
 """
 
