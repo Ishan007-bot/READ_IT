@@ -40,6 +40,6 @@ def get_settings() -> Settings:
             "EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"
         ),
         top_k=int(os.getenv("TOP_K", "6")),
-        retrieval_threshold=float(os.getenv("RETRIEVAL_THRESHOLD", "0.25")),
+        retrieval_threshold=float(os.getenv("RETRIEVAL_THRESHOLD", "0.15")),
         max_tokens=int(os.getenv("MAX_TOKENS", "1024")),
     )

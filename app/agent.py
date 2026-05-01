@@ -19,7 +19,7 @@ import re
 from dataclasses import dataclass
 from typing import List
 
-from groq import Groq
+from groq import BadRequestError, Groq
 
 from app.config import Settings
 from app.prompts import SYSTEM_PROMPT, build_user_prompt
@@ -83,8 +83,9 @@ def _format_tool_result(retrieved: List[RetrievedChunk], threshold: float) -> st
             {
                 "passages": [],
                 "note": (
-                    "No passages found. The document does not appear to "
-                    "contain information related to this query."
+                    "No passages were returned by retrieval. The document "
+                    "does not appear to contain information related to "
+                    "this query."
                 ),
             }
         )
@@ -104,10 +105,13 @@ def _format_tool_result(retrieved: List[RetrievedChunk], threshold: float) -> st
         ],
     }
     if weak:
+        # Hint, not an order. The model still reads the passages first;
+        # only if they truly don't address the question does it refuse.
         payload["note"] = (
-            f"All retrieval scores are weak (top score={top_score:.2f} < "
-            f"{threshold:.2f}). The document likely does NOT contain the "
-            "answer. Prefer to respond: \"I couldn't find that in the "
+            f"Retrieval confidence is low (top score={top_score:.2f} < "
+            f"{threshold:.2f}). Read the passages carefully — if any of "
+            "them address the question, answer using that information. "
+            "If none of them do, reply: \"I couldn't find that in the "
             "document.\""
         )
     return json.dumps(payload, ensure_ascii=False)
@@ -118,6 +122,49 @@ class PDFAgent:
         self.retriever = retriever
         self.settings = settings
         self.client = Groq(api_key=settings.groq_api_key)
+
+    def _is_tool_use_failed(self, err: BadRequestError) -> bool:
+        """Detect Groq's `tool_use_failed` error across SDK versions."""
+        # Inspect every plausible attribute for the marker string
+        for source in (
+            getattr(err, "body", None),
+            getattr(err, "message", None),
+            str(err),
+        ):
+            if source is None:
+                continue
+            if isinstance(source, dict):
+                text = json.dumps(source)
+            else:
+                text = str(source)
+            if "tool_use_failed" in text:
+                return True
+        return False
+
+    def _call_with_retry(self, messages: List[dict]):
+        """Call Groq once at low temperature; if Llama emits a malformed
+        tool-call (Groq returns 400 with code `tool_use_failed`), retry up
+        to twice with temperature bumps — usually fixes the JSON."""
+        last_err: BadRequestError | None = None
+        for attempt, temp in enumerate((0.1, 0.4, 0.7)):
+            try:
+                return self.client.chat.completions.create(
+                    model=self.settings.groq_model,
+                    messages=messages,
+                    tools=TOOL_SCHEMA,
+                    tool_choice="auto",
+                    temperature=temp,
+                    max_tokens=self.settings.max_tokens,
+                )
+            except BadRequestError as e:
+                last_err = e
+                if self._is_tool_use_failed(e) and attempt < 2:
+                    continue
+                raise
+        # Unreachable but keeps the type checker happy
+        if last_err is not None:
+            raise last_err
+        raise RuntimeError("unreachable")
 
     def _dispatch_tool(self, name: str, args: dict) -> tuple[str, List[RetrievedChunk]]:
         if name == "retrieve_from_pdf":
@@ -144,14 +191,7 @@ class PDFAgent:
         tool_calls = 0
 
         for _ in range(MAX_STEPS):
-            resp = self.client.chat.completions.create(
-                model=self.settings.groq_model,
-                messages=messages,
-                tools=TOOL_SCHEMA,
-                tool_choice="auto",
-                temperature=0.1,
-                max_tokens=self.settings.max_tokens,
-            )
+            resp = self._call_with_retry(messages)
             msg = resp.choices[0].message
 
             if msg.tool_calls:
