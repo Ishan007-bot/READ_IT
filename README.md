@@ -3,7 +3,7 @@
 ## 🔗 Quick Links
 
 - 🚀 **Deployed Application:** [Open the live app](https://readit-8n9hjsoiczfjqjiuwbcdtw.streamlit.app/)
-- 🎬 **Live Demo Video:** [Watch the walkthrough](https://your-demo-video-url)
+- 🎬 **Live Demo Video:** [Watch the walkthrough](https://drive.google.com/file/d/1NlStr2DlkMAsjh-W2IQoKfPVuC0gyDSA/view?usp=sharing)
 - 📊 **Presentation PPT:** [View the PPT Slides](https://drive.google.com/file/d/1IC42ty4rO0xCchUXLawZKEk5uCYmmRBX/view?usp=sharing)
 
 A polished chat agent that answers questions about a single PDF and **only**
